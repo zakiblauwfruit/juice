@@ -1,0 +1,15 @@
+#!/bin/bash
+
+source app/functions
+
+# Detect a database parameter automatically
+function detectDatabaseParam() {
+
+    DATABASE_HOST_DEFAULT=$(php -r "\$conf = require_once('$APPLICATION_PATH/app/config/parameters.php'); echo \$conf['parameters']['$1'];")
+
+    if [[ $? != 0 ]]; then
+        echo ""  # Echo empty string if PHP command failed
+    else
+        echo $DATABASE_HOST_DEFAULT
+    fi
+}

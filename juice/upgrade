@@ -1,0 +1,114 @@
+#!/bin/bash
+
+source .env
+source app/constants
+source app/functions
+
+# Call the check script and exit if it fails
+
+bash juice/check
+check_status=$?
+if [ $check_status -ne 0 ]; then
+  echo "Check script failed with status $check_status. Aborting upgrade."
+  exit $check_status
+fi
+
+
+# If check is successful, continue process
+
+success "Start upgrade"
+
+releaseZip="prestashop-${PRESTASHOP_NEW_VERSION}.zip"
+releaseSourceUrl="https://github.com/PrestaShop/PrestaShop/releases/download/${PRESTASHOP_NEW_VERSION}/prestashop_${PRESTASHOP_NEW_VERSION}.zip"
+
+
+if [ ! -f "$releaseZip" ]; then
+  curl -L --write-out %{http_code} --silent --output "$releaseZip" "$releaseSourceUrl"
+  if [[ $? != 0 ]]; then
+    warning "Curl has issues, exit $?"
+    exit 1
+  fi
+fi
+
+if [ ! -f "$src/index.php" ]; then
+  mkdir -p "$src"
+  unzip -o "$releaseZip" -d "$src"
+  if [[ $? != 0 ]]; then
+    warning "Unzip failed, exit $?"
+    exit 1
+  fi
+  # Unzipping the inner prestashop.zip
+  unzip -o "$src/prestashop.zip" -d "$src"
+fi
+
+# Add custom exclude list config/exclude-list-custom.txt
+rsync -av --exclude-from="config/exclude-list.txt" --exclude-from="config/exclude-list-custom.txt" "$src"/* "$APPLICATION_PATH"
+
+find "$APPLICATION_PATH" -type d -exec chmod 777 {} \;
+
+rm -f "$APPLICATION_PATH/cache/class_index.php"
+rm -rf "$APPLICATION_PATH/var/"
+rm -rf \
+  "$APPLICATION_PATH/cache/cachefs" \
+  "$APPLICATION_PATH/cache/smarty/compile" \
+  "$APPLICATION_PATH/cache/smarty/cache"
+
+if [ -f "$APPLICATION_PATH/config/defines.inc.php" ]; then
+  success "defines.inc.php exists"
+else
+  warning "$APPLICATION_PATH/config/defines.inc.php does not exist"
+  exit 1
+fi
+
+defines_inc_php="$APPLICATION_PATH/config/defines.inc.php"
+
+sed -i '' -e "s/_PS_MODE_DEV_', false/_PS_MODE_DEV_', true/g" "$defines_inc_php"
+
+if [ $? == 0 ]; then
+  success "Dev mode turned on"
+else
+  warning "Command 'sed' could not manipulate $defines_inc_php, exit code $?"
+fi
+
+mkdir -p "$resultPath"
+
+curlOutPut=$(curl --write-out %{http_code} --silent --output "$resultPath/results.xml" "$SHOP_URL/install/upgrade/upgrade.php")
+
+if [[ $? == 0 ]]; then
+  success "Upgrade script was called successfully, response $curlOutPut"
+else
+  warning "Something went wrong with calling the upgrade script with curl, exit code $?"
+fi
+
+rm -r "$APPLICATION_PATH/install"
+
+if [[ $? == 0 ]]; then
+  success "/install folder successfully removed"
+else
+  warning "/install folder could not be removed"
+fi
+
+rm -r "${APPLICATION_PATH/$BACKOFFICE_FOLDER}"
+
+if [[ $? == 0 ]]; then
+  success "/$BACKOFFICE_FOLDER folder successfully removed"
+fi
+
+rm -r "$APPLICATION_PATH/themes/default-bootstrap"
+
+if [[ $? == 0 ]]; then
+  success "/themes/default-bootstrap folder successfully removed"
+fi
+
+mv "$APPLICATION_PATH/admin" "$APPLICATION_PATH"/"$BACKOFFICE_FOLDER"
+
+if [[ $? == 0 ]]; then
+  success "Admin folder successfully replaced"
+else
+  warning "There was an issue with creating the admin folder. Command 'mv' exit code $?"
+fi
+
+cp "$resultPath/results.xml" "${resultPath}""/results-$(date +'%Y-%m-%d_%T').xml"
+
+success "See the front-office $SHOP_URL/"
+success "See the back-office $SHOP_URL/$BACKOFFICE_FOLDER/"

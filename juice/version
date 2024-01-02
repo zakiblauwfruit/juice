@@ -1,0 +1,26 @@
+#!/bin/bash
+
+source config/settings
+source app/constants
+source app/functions
+
+# Logic
+
+currentVersion=$(php -r "include '${applicationPath}/config/config.inc.php';echo _PS_VERSION_;")
+
+if [[ currentVersion == '_PS_VERSION_' ]]; then
+    # probably 1.7
+    currentVersion=$(php -r "echo include('${applicationPath}/app/config/parameters.php')[];")
+fi
+
+if [[ $? == 0 && $currentVersion ]]; then
+    success "Current version is $currentVersion"
+
+    if [[ $upgradedVersion == $currentVersion ]]; then
+        success "Application is updated"
+    else
+        warning "Application is not updated"
+    fi
+else
+    warning "Current version not found"
+fi

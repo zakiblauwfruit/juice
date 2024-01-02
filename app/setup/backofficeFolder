@@ -1,0 +1,21 @@
+#!/bin/bash
+
+source app/functions
+
+# Set backoffice folder
+
+function backofficeFolder() {
+    
+    BACKOFFICE_FOLDER_DEFAULT='admin-dev'
+    echo -n "What is backoffice folder name? [$BACKOFFICE_FOLDER_DEFAULT]"
+    read BACKOFFICE_FOLDER
+    BACKOFFICE_FOLDER=${BACKOFFICE_FOLDER:-$BACKOFFICE_FOLDER_DEFAULT}
+    echo "BACKOFFICE_FOLDER=$BACKOFFICE_FOLDER" >> .env
+
+    if [[ -d $APPLICATION_PATH/$BACKOFFICE_FOLDER ]]; then
+        success "Backoffice folder is set to $BACKOFFICE_FOLDER"
+    else
+        warning "Backoffice folder $BACKOFFICE_FOLDER does not seem to exist"
+        backofficeFolder
+    fi
+}

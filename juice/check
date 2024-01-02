@@ -1,0 +1,68 @@
+#!/bin/bash
+
+source .env
+source app/functions
+source app/constants
+
+
+# Check if all variables are set
+
+if [[ -z $APPLICATION_PATH ]]; then
+  danger "APPLICATION_PATH is empty"
+fi
+
+if [[ -z $APPLICATION_PATH ]]; then
+  danger "APPLICATION_PATH is not set."
+fi
+
+if [[ -z $PRESTASHOP_OLD_VERSION ]]; then
+  danger "PRESTASHOP_OLD_VERSION is not set."
+fi
+
+if [[ -z $PRESTASHOP_NEW_VERSION ]]; then
+  danger "PRESTASHOP_NEW_VERSION is not set."
+fi
+
+if [[ -z $SHOP_URL ]]; then
+  danger "SHOP_URL is not set."
+fi
+
+if [[ -z $BACKOFFICE_FOLDER ]]; then
+  danger "BACKOFFICE_FOLDER is not set."
+fi
+
+if [[ -z $DATABASE_HOST ]]; then
+  danger "DATABASE_HOST is not set."
+fi
+
+if [[ -z $DATABASE_NAME ]]; then
+  danger "DATABASE_NAME is not set."
+fi
+
+if [[ -z $DATABASE_USER ]]; then
+  danger "DATABASE_USER is not set."
+fi
+
+if [[ -z $DATABASE_PASSWORD ]]; then
+  danger "DATABASE_PASSWORD is not set."
+fi
+
+if [[ -z $DATABASE_PREFIX ]]; then
+  danger "DATABASE_PREFIX is not set."
+fi
+
+# Check for backup existence
+if [[ ! -f "${backupPath}/files/config/settings.inc.php" ]]; then
+  danger "No backup found. Please create a backup first."
+fi
+
+
+# To do: Check if application is already upgraded
+
+# currentVersion=$(php -r "include '${APPLICATION_PATH}/config/settings.inc.php';echo _PS_VERSION_;")
+# if [ "$currentVersion" == "$PRESTASHOP_NEW_VERSION" ]; then
+#     danger "The application is already at version $UPGRADED_VERSION"
+#     exit 1
+# fi
+
+success "All preliminary checks passed. Ready to proceed with the upgrade."

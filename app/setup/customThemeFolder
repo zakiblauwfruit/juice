@@ -1,0 +1,20 @@
+#!/bin/bash
+
+source app/functions
+
+# Set the custom theme, so it will not be override by rsync in the upgrade process
+
+function customThemeFolder() {
+
+    echo -n "What is you're custom theme's folder name, that we need to exclude from upgrading?"
+    read CUSTOM_THEME
+    CUSTOM_THEME_PATH="themes/$CUSTOM_THEME"
+
+    if [[ -d "$APPLICATION_PATH/$CUSTOM_THEME_PATH" ]]; then
+        echo "./$CUSTOM_THEME_PATH" > config/exclude-list-custom.txt
+        success "$CUSTOM_THEME_PATH is added to the exclude list"
+    else
+        warning "$APPLICATION_PATH/$CUSTOM_THEME_PATH does not exist"
+        customThemeFolder
+    fi
+}

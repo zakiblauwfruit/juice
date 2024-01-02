@@ -1,0 +1,15 @@
+#!/bin/bash
+
+source ../config/settings
+source constants
+source functions
+
+# Test
+
+info "This a info message"
+
+success "This a success message"
+
+warning "This a warning message"
+
+danger "This a danger message"

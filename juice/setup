@@ -1,0 +1,31 @@
+#!/bin/bash
+
+source app/functions
+
+# Include all the questions
+
+while IFS= read -r file; do
+    if [[ $file != 'app/setup' ]]; then
+        source "$file"
+    fi
+done < <(find app/setup)
+
+# Setup questions
+
+newsetup
+
+applicationPath
+
+customThemeFolder
+
+currentVersion
+
+newVersion
+
+publicUrl
+
+backofficeFolder
+
+databaseCredentials
+
+success "You're all setup now, you can start the upgrade process. Run bash juice/upgrade."

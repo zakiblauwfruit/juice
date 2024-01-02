@@ -1,0 +1,16 @@
+#!/bin/bash
+
+source app/functions
+
+# Database name
+
+function databaseName() {
+
+    DATABASE_NAME_DEFAULT=$(detectDatabaseParam 'database_name')
+    echo -n "What is the database name? [$DATABASE_NAME_DEFAULT]"
+    read DATABASE_NAME
+    DATABASE_NAME=${DATABASE_NAME:-$DATABASE_NAME_DEFAULT}
+
+    # echo "DATABASE_NAME=$DATABASE_NAME" >> .env
+    # success "Database name is set to $DATABASE_NAME"
+}

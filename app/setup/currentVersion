@@ -1,0 +1,27 @@
+#!/bin/bash
+
+source app/functions
+
+# Get the version
+
+function currentVersion() {
+
+    # To do: Maybe this should be a part of the applicationPath question
+    if [[ ! -f $APPLICATION_PATH/config/config.inc.php ]]; then
+        danger "Does not look like this is a working PrestaShop installation"
+    fi
+
+    PRESTASHOP_OLD_VERSION=$(php -r "include '$APPLICATION_PATH/config/config.inc.php';echo _PS_VERSION_;")
+    if [[ $? != 0 ]]; then
+        PRESTASHOP_OLD_VERSION=""
+    fi
+
+    echo -n "What is the current PrestaShop version that you're using [$PRESTASHOP_OLD_VERSION]?"
+    read PRESTASHOP_OLD_VERSION_ANSWER
+    if [[ -n "$PRESTASHOP_OLD_VERSION_ANSWER" ]]; then
+        PRESTASHOP_OLD_VERSION="$PRESTASHOP_OLD_VERSION_ANSWER"
+    fi
+
+    echo "PRESTASHOP_OLD_VERSION=$PRESTASHOP_OLD_VERSION" >> .env
+    success "PrestaShop version: '$PRESTASHOP_OLD_VERSION'"
+}

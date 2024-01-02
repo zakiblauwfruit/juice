@@ -1,0 +1,44 @@
+#!/bin/bash
+
+source .env
+source config/settings
+source app/constants
+source app/functions
+
+# Process
+
+success "Start restore process"
+
+mkdir -p $backupPath
+
+if [ $(php -r "include '${backupPath}/files/config/settings.inc.php';echo _PS_VERSION_;") == $PRESTASHOP_NEW_VERSION ]; then
+    warning "The backup you're trying to restore is the upgraded version $PRESTASHOP_NEW_VERSION"
+    exit 1
+fi
+
+mysql -h$DATABASE_HOST -u$DATABASE_USER -p$DATABASE_PASSWORD $DATABASE_NAME < $backupPath/database.sql
+
+if [[ $? == 0 ]]; then
+    success "Database restored"
+else
+    warning "mysql import went wrong giving exit code $?"
+fi
+
+rsync -azv --exclude 'cache/cachefs' "$backupPath/files/"* $APPLICATION_PATH
+
+if [ $? == 0 ]; then
+    success "rsync was success fully completed"
+else
+    warning "rsync went wrong giving exit code $?"
+fi
+
+rm -rf "$APPLICATION_PATH/cache/smarty/compile" \
+    "$APPLICATION_PATH/cache/class_index.php"
+
+if [[ $? == 0 ]]; then
+    success "Remove cache files completed"
+else
+    warming "Remove cache files could not be completed"
+fi
+
+success "Dest folder restored"

@@ -1,0 +1,10 @@
+# Ignore upgrade data
+
+data/
+prestashop/
+results/
+
+# Ignore upgrade settings
+
+.env
+config/exclude-list-custom.txt

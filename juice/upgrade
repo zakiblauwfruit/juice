@@ -5,7 +5,6 @@ source app/constants
 source app/functions
 
 # Call the check script and exit if it fails
-
 bash juice/check
 check_status=$?
 if [ $check_status -ne 0 ]; then
@@ -88,24 +87,33 @@ else
   warning "/install folder could not be removed"
 fi
 
-rm -r "${APPLICATION_PATH/$BACKOFFICE_FOLDER}"
-
-if [[ $? == 0 ]]; then
-  success "/$BACKOFFICE_FOLDER folder successfully removed"
+# Remove backoffice folder
+if [ -d "$APPLICATION_PATH/$BACKOFFICE_FOLDER" ]; then
+  rm -r "$APPLICATION_PATH/$BACKOFFICE_FOLDER"
+  if [[ $? -eq 0 ]]; then
+    success "/$BACKOFFICE_FOLDER folder successfully removed"
+  else
+    warning "/$BACKOFFICE_FOLDER folder could not be removed"
+  fi
 fi
 
-rm -r "$APPLICATION_PATH/themes/default-bootstrap"
-
-if [[ $? == 0 ]]; then
-  success "/themes/default-bootstrap folder successfully removed"
+# Remove themes/default-bootstrap folder
+if [ -d "$APPLICATION_PATH/themes/default-bootstrap" ]; then
+  rm -r "$APPLICATION_PATH/themes/default-bootstrap"
+  if [[ $? -eq 0 ]]; then
+    success "/themes/default-bootstrap folder successfully removed"
+  fi
 fi
 
-mv "$APPLICATION_PATH/admin" "$APPLICATION_PATH"/"$BACKOFFICE_FOLDER"
-
-if [[ $? == 0 ]]; then
-  success "Admin folder successfully replaced"
-else
-  warning "There was an issue with creating the admin folder. Command 'mv' exit code $?"
+# Replace admin folder
+if [ -d "$APPLICATION_PATH/admin" ]; then
+  mv "$APPLICATION_PATH/admin" "$APPLICATION_PATH/$BACKOFFICE_FOLDER"
+  if [[ $? -eq 0 ]]; then
+    success "Admin folder successfully replaced"
+  else
+    warning "There was an issue with creating the admin folder. Command 'mv' exit code $?"
+    exit 1
+  fi
 fi
 
 cp "$resultPath/results.xml" "${resultPath}""/results-$(date +'%Y-%m-%d_%T').xml"

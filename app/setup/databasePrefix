@@ -11,6 +11,6 @@ function databasePrefix() {
     read DATABASE_PREFIX
     DATABASE_PREFIX=${DATABASE_PREFIX:-$DATABASE_PREFIX_DEFAULT}
     
-    # echo "DATABASE_PREFIX=$DATABASE_PREFIX" >> .env
-    # success "Database prefix is set to $DATABASE_PREFIX"
+     echo "DATABASE_PREFIX=$DATABASE_PREFIX" >> .env
+     success "Database prefix is set to $DATABASE_PREFIX"
 }

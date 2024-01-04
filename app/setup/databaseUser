@@ -11,6 +11,6 @@ function databaseUser() {
     read DATABASE_USER
     DATABASE_USER=${DATABASE_USER:-$DATABASE_USER_DEFAULT}
     
-    # echo "DATABASE_USER=$DATABASE_USER" >> .env
-    # success "Database user is set to $DATABASE_USER"
+     echo "DATABASE_USER=$DATABASE_USER" >> .env
+     success "Database user is set to $DATABASE_USER"
 }

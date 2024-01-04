@@ -11,6 +11,6 @@ function databaseHost() {
     read DATABASE_HOST
     DATABASE_HOST=${DATABASE_HOST:-$DATABASE_HOST_DEFAULT}
     
-    # echo "DATABASE_HOST=$DATABASE_HOST" >> .env
-    # success "Database host is set to $DATABASE_HOST"
+     echo "DATABASE_HOST=$DATABASE_HOST" >> .env
+     success "Database host is set to $DATABASE_HOST"
 }

@@ -5,7 +5,7 @@ source app/functions
 function publicUrl() {
 
     # Set shop url
-    SHOP_URL_DEFAULT='http://localhost/'
+    SHOP_URL_DEFAULT='http://localhost'
     echo -n "What is shop URL? [$SHOP_URL_DEFAULT] "
     read SHOP_URL
     SHOP_URL=${SHOP_URL:-$SHOP_URL_DEFAULT}

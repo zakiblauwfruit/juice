@@ -56,6 +56,12 @@ info "Copying new release in application folder"
 # Add custom exclude list config/exclude-list-custom.txt
 rsync -av --exclude-from="config/exclude-list.txt" --exclude-from="config/exclude-list-custom.txt" $src/* $APPLICATION_PATH
 
+# Adjust ownership and permissions
+chown -R www-data:www-data /var/www/html
+find /var/www/html -type d -exec chmod 755 {} \;
+find /var/www/html -type f -exec chmod 644 {} \;
+
+
 rm -f "$APPLICATION_PATH/cache/class_index.php"
 rm -rf "$APPLICATION_PATH/var/"
 rm -rf \
@@ -104,12 +110,6 @@ rm -r "$APPLICATION_PATH/var"
 
 info "Creating the themes cache folder"
 mkdir -p "$APPLICATION_PATH/themes/classic/assets/cache"
-
-info "Adding the correct rights to the folders"
-find $APPLICATION_PATH -type d -exec chmod 755 {} \;
-
-info "Adding the correct rights to the files"
-find $APPLICATION_PATH -type f -exec chmod 644 {} \;
 
 if [[ $? == 0 ]]; then
   success "/install folder successfully removed"

@@ -15,7 +15,7 @@ if [ $PRESTASHOP_OLD_VERSION == $PRESTASHOP_NEW_VERSION ]; then
     exit 1
 fi
 
-mysql -h$DATABASE_HOST -u$DATABASE_USER -p$DATABASE_PASSWORD $DATABASE_NAME < $backupPath/database.sql
+mysql -h$DATABASE_HOST -u$DATABASE_USER -p$DATABASE_PASSWORD -vv $DATABASE_NAME < $backupPath/database.sql
 
 if [[ $? == 0 ]]; then
     success "Database restored"

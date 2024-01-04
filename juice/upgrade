@@ -56,11 +56,8 @@ info "Copying new release in application folder"
 # Add custom exclude list config/exclude-list-custom.txt
 rsync -av --exclude-from="config/exclude-list.txt" --exclude-from="config/exclude-list-custom.txt" $src/* $APPLICATION_PATH
 
-# Adjust ownership and permissions
+# Adjust ownership
 chown -R www-data:www-data /var/www/html
-find /var/www/html -type d -exec chmod 755 {} \;
-find /var/www/html -type f -exec chmod 644 {} \;
-
 
 rm -f "$APPLICATION_PATH/cache/class_index.php"
 rm -rf "$APPLICATION_PATH/var/"

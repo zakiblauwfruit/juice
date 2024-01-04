@@ -96,7 +96,10 @@ else
   warning "Something went wrong with calling the upgrade script with curl, exit code $?"
 fi
 
+info "Removing install folder"
 rm -r "$APPLICATION_PATH/install"
+
+info "Removing var folder"
 rm -r "$APPLICATION_PATH/var"
 
 info "Creating the themes cache folder"
